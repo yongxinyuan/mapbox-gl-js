@@ -26,6 +26,7 @@
         }
     </style>
 </head>
+
 <body>
     <script src='../../dist/mapbox-gl-dev.js'></script>
     <script src='../../debug/access_token_generated.js'></script>
@@ -44,6 +45,9 @@
     </div>
     <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.8.0/suncalc.min.js'></script>
     <script type="module">
+        // import { mat4, mat3, vec4, vec3 } from '../../node_modules/gl-matrix/gl-matrix.js';
+        import createModel from "./create-model.js";
+
         var map = window.map = new mapboxgl.Map({
             container: 'map',
             zoom: 14.1,
@@ -85,14 +89,37 @@
             map.setPaintProperty('sky', 'sky-atmosphere-sun', getSunPosition());
         });
 
+        const modelLayer = {
+            id: "dfzm-model",
+            type: "custom",
+            renderingMode: '3d',
+            onAdd: function (map, gl) {
+                this.map = map;
+                createModel(map, gl, this);
+            },
+            render: function (gl, matrix) {
+                if (this.renderModel && typeof this.renderModel === "function") {
+                    const skyLayer = this.map.getLayer("sky");
+
+                    if (!skyLayer) {
+                        return;
+                    }
+
+                    this.renderModel(gl, null, skyLayer);
+                }
+            }
+        }
+
         map.on('style.load', function () {
+            map.addLayer(modelLayer);
+
             map.addSource('mapbox-dem', {
                 "type": "raster-dem",
                 "url": "mapbox://mapbox.terrain-rgb",
                 "tileSize": 512,
                 "maxzoom": 14
             });
-            map.setTerrain({"source": "mapbox-dem", "exaggeration": 1.5});
+            map.setTerrain({ "source": "mapbox-dem", "exaggeration": 1.5 });
             map.addLayer({
                 'id': 'sky',
                 'type': 'sky',
