@@ -145,10 +145,8 @@ struct Sphere {
     int material;
 };
 
-const vec3 sun_color = vec3(1.0, 0.7, 0.55);
 const Hit no_hit = Hit(float(max_dist + 1e1), -1, vec3(0.0), vec3(0.0));
-const Sphere atm = Sphere(vec3(0.0, -450.0, 0.0), 500.0, 0);
-const Sphere atm2 = Sphere(atm.origin, atm.radius + 50.0, 0);
+const Sphere atm = Sphere(vec3(0.0, -450.0, 0.0), ATMOSPHERE_RADIUS, 0);
 
 void intersect_sphere(const in Ray ray, const in Sphere sphere, inout Hit hit) {
     vec3 rc = sphere.origin - ray.origin;
