@@ -5,7 +5,7 @@
     <title>Mapbox GL JS Sky Demo</title>
     <meta charset='utf-8'>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <link href='main.css' rel='stylesheet' type="text/css" />
+    <link href='../../src/css/mapbox-gl.css' rel='stylesheet' type="text/css" />
     <style>
         body {
             margin: 0;
@@ -27,8 +27,8 @@
     </style>
 </head>
 <body>
-    <script src='../dist/mapbox-gl-dev.js'></script>
-    <script src='../debug/access_token_generated.js'></script>
+    <script src='../../dist/mapbox-gl-dev.js'></script>
+    <script src='../../debug/access_token_generated.js'></script>
     <div id='map'></div>
     <div id='inputs'>
         <input type="button" id="sunriseEnd" value="sunrise">
@@ -51,7 +51,7 @@
             pitch: 85,
             bearing: 70,
             style: 'mapbox://styles/mapbox/satellite-v9',
-            hash: true,
+            hash: false,
         });
         let date = new Date(Date.now());
 
