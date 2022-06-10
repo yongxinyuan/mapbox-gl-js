@@ -260,6 +260,19 @@ void main() {
 
     vec3 color = atmosphere(normalize(ray_direction), u_sun_direction, u_sun_intensity);
 
+    // 天空盒添加体积云
+    // 参考 https://www.shadertoy.com/view/XtBXDw
+    // 按照示例重新组织空间结构
+    vec2 u_res = vec2(512.0, 512.0);
+    vec2 fov = tan(radians(45.0));
+    float pointX = (2.0 * gl_FragCoord.x / u_res.x - 1.0) * u_res.x / u_res.y * fov;
+    float pointY = (2.0 * gl_FragCoord.y / u_res.y - 1.0) * 1.0 * fov;
+    float pointZ = -1.0;
+    vec3 point_cam = vec3(pointX, pointY, pointZ);
+    vec3 eyePosition = vec3(0.0);
+    vec3 lookAt = vec3(0.0, -PLANET_RADIUS, -PLANET_RADIUS);
+    Ray 
+
     Ray ray;
     ray.origin = vec3(0.0);
     ray.direction = normalize(ray_direction);
