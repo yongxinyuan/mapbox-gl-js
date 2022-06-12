@@ -146,7 +146,7 @@ struct Sphere {
 };
 
 const Hit no_hit = Hit(float(max_dist + 1e1), -1, vec3(0.0), vec3(0.0));
-const Sphere atm = Sphere(vec3(0.0, -450.0, 0.0), ATMOSPHERE_RADIUS, 0);
+const Sphere atm = Sphere(vec3(0.0, -(PLANET_RADIUS), 0.0), ATMOSPHERE_RADIUS, 0);
 
 void intersect_sphere(const in Ray ray, const in Sphere sphere, inout Hit hit) {
     vec3 rc = sphere.origin - ray.origin;
@@ -247,6 +247,16 @@ vec4 renderClouds(Ray eye) {
     return vec4(C, alpha);
 }
 
+Ray getPrimaryRay(const in vec3 cam_local_point, inout vec3 cam_origin, inout vec3 cam_look_at) {
+    vec3 fwd = normalize(cam_look_at - cam_origin);
+    vec3 up = vec3(0, 1, 0);
+    vec3 right = cross(up, fwd);
+    up = cross(fwd, right);
+
+    Ray r = Ray(cam_origin, normalize(fwd + up * cam_local_point.y + right * cam_local_point.x));
+    return r;
+}
+
 void main() {
     vec3 ray_direction = v_position;
 
@@ -264,20 +274,16 @@ void main() {
     // 参考 https://www.shadertoy.com/view/XtBXDw
     // 按照示例重新组织空间结构
     vec2 u_res = vec2(512.0, 512.0);
-    vec2 fov = tan(radians(45.0));
+    float fov = tan(radians(45.0));
     float pointX = (2.0 * gl_FragCoord.x / u_res.x - 1.0) * u_res.x / u_res.y * fov;
     float pointY = (2.0 * gl_FragCoord.y / u_res.y - 1.0) * 1.0 * fov;
     float pointZ = -1.0;
     vec3 point_cam = vec3(pointX, pointY, pointZ);
-    vec3 eyePosition = vec3(0.0);
-    vec3 lookAt = vec3(0.0, -PLANET_RADIUS, -PLANET_RADIUS);
-    Ray 
+    vec3 eyePosition = vec3(0.0, 0.0, 0.0);
+    vec3 lookAt = vec3(0.0, 0.0, -1.0);
+    Ray eyeRay = getPrimaryRay(point_cam, eyePosition, lookAt);
 
-    Ray ray;
-    ray.origin = vec3(0.0);
-    ray.direction = normalize(ray_direction);
-
-    vec4 clouds = renderClouds(ray);
+    vec4 clouds = renderClouds(eyeRay);
 
     color = mix(color, clouds.rgb / (0.000001 + clouds.a), clouds.a);
 
