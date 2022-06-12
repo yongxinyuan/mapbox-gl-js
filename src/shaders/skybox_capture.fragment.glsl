@@ -122,13 +122,13 @@ vec3 uncharted2_tonemap(vec3 x) {
 }
 
 #define COVERAGE		0.50
-#define THICKNESS		15.0
-#define ABSORPTION		1.030725
+#define THICKNESS		10.0
+#define ABSORPTION		0.930725
 #define WIND			vec3(0.0, 0.0, -15.0 * 0.2)
-#define FBM_FREQ		2.76434
+#define FBM_FREQ		1.56434
 #define STEPS			25
 
-#define max_dist 1e8
+#define max_dist 1e4
 const struct Ray {
     vec3 origin;
     vec3 direction;
@@ -198,7 +198,7 @@ float get_noise(const in vec3 x) {
 }
 
 float density(const in vec3 pos, const in vec3 offset, const in float t) {
-    vec3 p = pos * .0212242 + offset;
+    vec3 p = pos * .9212242 + offset;
     float dens = get_noise(p);
     float cov = 1.0 - COVERAGE;
     dens *= smoothstep(cov, cov + 0.05, dens);
@@ -275,7 +275,7 @@ void main() {
     // 按照示例重新组织空间结构
     vec2 u_res = vec2(512.0, 512.0);
     float fov = tan(radians(45.0));
-    float pointX = (2.0 * gl_FragCoord.x / u_res.x - 1.0) * u_res.x / u_res.y * fov;
+    float pointX = (2.0 * gl_FragCoord.x / u_res.x - 1.0) * u_res.x * 2.0 / u_res.y * fov;
     float pointY = (2.0 * gl_FragCoord.y / u_res.y - 1.0) * 1.0 * fov;
     float pointZ = -1.0;
     vec3 point_cam = vec3(pointX, pointY, pointZ);
@@ -285,11 +285,13 @@ void main() {
 
     vec4 clouds = renderClouds(eyeRay);
 
-    color = mix(color, clouds.rgb / (0.000001 + clouds.a), clouds.a);
-
     // Apply exposure [3]
     float white_scale = 1.0748724675633854; // 1.0 / uncharted2_tonemap(1000.0)
     color = uncharted2_tonemap((log2(2.0 / pow(u_luminance, 4.0))) * color) * white_scale;
+
+    color = mix(color, clouds.rgb / (0.000001 + clouds.a), clouds.a);
+
+    // color = clouds.rgb;
 
     gl_FragColor = vec4(color, 1.0);
 }
