@@ -135,9 +135,9 @@ const float CLOUDS_FBM_FREQ = 2.76434;
 // Ray Marching 步数
 const int CLOUDS_STEPS = 15;
 // 最大距离
-const float MAX_DIST = 1e8;
+const float MAX_DIST = 800.0;
 // 最小距离
-const float MIN_DIST = 1e3;
+const float MIN_DIST = 600.0;
 // 天空盒尺寸
 const vec2 SKY_BOX_SIZE = vec2(512.0, 512.0);
 // 天空盒垂直视角
@@ -157,8 +157,8 @@ struct CloudsSphere {
     float radius;
 };
 
-const CloudsHit noHit = CloudsHit(float(MAX_DIST + 1e1), vec3(0.0), vec3(0.0));
-const CloudsSphere cloudsSphere = CloudsSphere(vec3(0.0, -500.0, 0.0), 800.0);
+const CloudsHit noHit = CloudsHit(float(MAX_DIST + 200.0), vec3(0.0), vec3(0.0));
+const CloudsSphere cloudsSphere = CloudsSphere(vec3(0.0, -800.0, 0.0), 900.0);
 
 void intersect_sphere(const in CloudsRay ray, const in CloudsSphere sphere, inout CloudsHit hit) {
     vec3 rc = sphere.origin - ray.origin;
@@ -284,6 +284,8 @@ void main() {
     // vec3 point_cam = vec3(pointX, pointY, pointZ);
     vec3 eyePosition = vec3(0.0, 0.0, 0.0);
     // vec3 lookAt = vec3(0.0, 0.0, -1.0);
+
+    ray_direction.y *= 3.0;
     CloudsRay eyeRay = getPrimaryRay(eyePosition, ray_direction);
 
     vec4 cloudsColor = renderClouds(eyeRay);
