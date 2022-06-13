@@ -158,7 +158,7 @@ struct CloudsSphere {
 };
 
 const CloudsHit noHit = CloudsHit(float(MAX_DIST + 1e1), vec3(0.0), vec3(0.0));
-const CloudsSphere cloudsSphere = CloudsSphere(vec3(0.0, -450.0, 0.0), 700.0);
+const CloudsSphere cloudsSphere = CloudsSphere(vec3(0.0, -500.0, 0.0), 800.0);
 
 void intersect_sphere(const in CloudsRay ray, const in CloudsSphere sphere, inout CloudsHit hit) {
     vec3 rc = sphere.origin - ray.origin;
@@ -224,7 +224,7 @@ vec4 renderClouds(CloudsRay eye) {
     const float thickness = CLOUDS_THICKNESS;
     const int steps = CLOUDS_STEPS;
     float march_step = thickness / float(steps);
-    vec3 dir_step = eye.direction / eye.direction.y * march_step;
+    vec3 dir_step = eye.direction * march_step;
     vec3 pos = hit.origin;
     float T = 1.0;
     vec3 C = vec3(0.0);
