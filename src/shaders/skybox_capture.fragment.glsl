@@ -136,6 +136,8 @@ const float CLOUDS_FBM_FREQ = 1.56434;
 const int CLOUDS_STEPS = 25;
 // 最大距离
 const float MAX_DIST = 1e4;
+// 最小距离
+const float MIN_DIST = 1e2;
 // 天空盒尺寸
 const vec2 SKY_BOX_SIZE = vec2(512.0, 512.0);
 // 天空盒垂直视角
@@ -238,7 +240,7 @@ vec4 renderClouds(CloudsRay eye) {
         C += T * (exp(h) / 1.75) * dens * march_step;
         alpha += (1. - T_i) * (1. - alpha);
         pos += dir_step;
-        if(length(pos) > 1e3)
+        if(length(pos) > MIN_DIST)
             break;
     }
 
