@@ -247,13 +247,14 @@ vec4 renderClouds(CloudsRay eye) {
     return vec4(C, alpha);
 }
 
-CloudsRay getPrimaryRay(const in vec3 cam_local_point, inout vec3 cam_origin, inout vec3 cam_look_at) {
-    vec3 fwd = normalize(cam_look_at - cam_origin);
-    vec3 up = vec3(0, 1, 0);
-    vec3 right = cross(up, fwd);
-    up = cross(fwd, right);
+// 这里暂时不使用屏幕坐标计算 ray marching 方向，保持和 mapbox 一致。
+CloudsRay getPrimaryRay(inout vec3 cam_origin, inout vec3 cam_look_at) {
+    // vec3 fwd = normalize(cam_look_at - cam_origin);
+    // vec3 up = vec3(0, 1, 0);
+    // vec3 right = cross(up, fwd);
+    // up = cross(fwd, right);
 
-    CloudsRay r = CloudsRay(cam_origin, normalize(fwd + up * cam_local_point.y + right * cam_local_point.x));
+    CloudsRay r = CloudsRay(cam_origin, cam_look_at);
     return r;
 }
 
@@ -275,15 +276,15 @@ void main() {
     color = uncharted2_tonemap((log2(2.0 / pow(u_luminance, 4.0))) * color) * white_scale;
 
     // 按照示例重新组织空间结构
-    vec2 u_res = SKY_BOX_SIZE;
-    float fov = tan(radians(SKY_BOX_FOV));
-    float pointX = (2.0 * gl_FragCoord.x / u_res.x - 1.0) * u_res.x * 2.0 / u_res.y * fov;
-    float pointY = (2.0 * gl_FragCoord.y / u_res.y - 1.0) * 1.0 * fov;
-    float pointZ = -1.0;
-    vec3 point_cam = vec3(pointX, pointY, pointZ);
+    // vec2 u_res = SKY_BOX_SIZE;
+    // float fov = tan(radians(SKY_BOX_FOV));
+    // float pointX = (2.0 * gl_FragCoord.x / u_res.x - 1.0) * u_res.x * 3.0 / u_res.y * fov;
+    // float pointY = (2.0 * gl_FragCoord.y / u_res.y - 1.0) * 1.0 * fov;
+    // float pointZ = -1.0;
+    // vec3 point_cam = vec3(pointX, pointY, pointZ);
     vec3 eyePosition = vec3(0.0, 0.0, 0.0);
-    vec3 lookAt = vec3(0.0, 0.0, -1.0);
-    CloudsRay eyeRay = getPrimaryRay(point_cam, eyePosition, lookAt);
+    // vec3 lookAt = vec3(0.0, 0.0, -1.0);
+    CloudsRay eyeRay = getPrimaryRay(eyePosition, ray_direction);
 
     vec4 cloudsColor = renderClouds(eyeRay);
 
