@@ -127,7 +127,7 @@ vec3 uncharted2_tonemap(vec3 x) {
 const float CLOUDS_COVERAGE = 0.50;
 // 云层厚度
 const float CLOUDS_THICKNESS = 10.0;
-// 云层吸收率
+// 云层吸收率，视觉上影响云层是比较黑还是比较白
 const float CLOUDS_ABSORPTION = 0.930725;
 // 风量影响
 const vec3 CLOUDS_WIND = vec3(0.0, 0.0, -15.0 * 0.2);
