@@ -158,7 +158,7 @@ struct CloudsSphere {
 };
 
 const CloudsHit noHit = CloudsHit(float(MAX_DIST + 1e1), vec3(0.0), vec3(0.0));
-const CloudsSphere cloudsSphere = CloudsSphere(vec3(0.0, -450.0, 0.0), 500.0);
+const CloudsSphere cloudsSphere = CloudsSphere(vec3(0.0, -450.0, 0.0), 700.0);
 
 void intersect_sphere(const in CloudsRay ray, const in CloudsSphere sphere, inout CloudsHit hit) {
     vec3 rc = sphere.origin - ray.origin;
