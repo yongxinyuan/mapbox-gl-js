@@ -126,18 +126,18 @@ vec3 uncharted2_tonemap(vec3 x) {
 // 云层覆盖率
 const float CLOUDS_COVERAGE = 0.50;
 // 云层厚度
-const float CLOUDS_THICKNESS = 10.0;
+const float CLOUDS_THICKNESS = 15.0;
 // 云层吸收率，视觉上影响云层是比较黑还是比较白
-const float CLOUDS_ABSORPTION = 0.930725;
+const float CLOUDS_ABSORPTION = 1.030725;
 // 风量影响
-const vec3 CLOUDS_WIND = vec3(0.0, 0.0, -15.0 * 0.2);
-const float CLOUDS_FBM_FREQ = 1.56434;
+const vec3 CLOUDS_WIND = vec3(0.0, 0.0, -0.0 * 0.2);
+const float CLOUDS_FBM_FREQ = 2.76434;
 // Ray Marching 步数
-const int CLOUDS_STEPS = 25;
+const int CLOUDS_STEPS = 15;
 // 最大距离
-const float MAX_DIST = 1e4;
+const float MAX_DIST = 1e8;
 // 最小距离
-const float MIN_DIST = 1e2;
+const float MIN_DIST = 1e3;
 // 天空盒尺寸
 const vec2 SKY_BOX_SIZE = vec2(512.0, 512.0);
 // 天空盒垂直视角
@@ -158,7 +158,7 @@ struct CloudsSphere {
 };
 
 const CloudsHit noHit = CloudsHit(float(MAX_DIST + 1e1), vec3(0.0), vec3(0.0));
-const CloudsSphere cloudsSphere = CloudsSphere(vec3(0.0, -PLANET_RADIUS, 0.0), ATMOSPHERE_RADIUS);
+const CloudsSphere cloudsSphere = CloudsSphere(vec3(0.0, -450.0, 0.0), 500.0);
 
 void intersect_sphere(const in CloudsRay ray, const in CloudsSphere sphere, inout CloudsHit hit) {
     vec3 rc = sphere.origin - ray.origin;
@@ -209,7 +209,7 @@ float get_noise(const in vec3 x) {
 }
 
 float density(const in vec3 pos, const in vec3 offset, const in float t) {
-    vec3 p = pos * .9212242 + offset;
+    vec3 p = pos * .0212242 + offset;
     float dens = get_noise(p);
     float cov = 1.0 - CLOUDS_COVERAGE;
     dens *= smoothstep(cov, cov + 0.05, dens);
