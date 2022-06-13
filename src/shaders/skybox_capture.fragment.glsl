@@ -121,141 +121,8 @@ vec3 uncharted2_tonemap(vec3 x) {
     return ((x * (A * x + C * B) + D * E) / (x * (A * x + B) + D * F)) - E / F;
 }
 
-#define COVERAGE		0.50
-#define THICKNESS		10.0
-#define ABSORPTION		0.930725
-#define WIND			vec3(0.0, 0.0, -15.0 * 0.2)
-#define FBM_FREQ		1.56434
-#define STEPS			25
-
-#define max_dist 1e4
-const struct Ray {
-    vec3 origin;
-    vec3 direction;
-};
-struct Hit {
-    float t;
-    int material_id;
-    vec3 normal;
-    vec3 origin;
-};
-struct Sphere {
-    vec3 origin;
-    float radius;
-    int material;
-};
-
-const Hit no_hit = Hit(float(max_dist + 1e1), -1, vec3(0.0), vec3(0.0));
-const Sphere atm = Sphere(vec3(0.0, -(PLANET_RADIUS), 0.0), ATMOSPHERE_RADIUS, 0);
-
-void intersect_sphere(const in Ray ray, const in Sphere sphere, inout Hit hit) {
-    vec3 rc = sphere.origin - ray.origin;
-    float radius2 = sphere.radius * sphere.radius;
-    float tca = dot(rc, ray.direction);
-    float d2 = dot(rc, rc) - tca * tca;
-    if(d2 > radius2)
-        return;
-    float thc = sqrt(radius2 - d2);
-    float t0 = tca - thc;
-    float t1 = tca + thc;
-    if(t0 < 0.)
-        t0 = t1;
-    if(t0 > hit.t)
-        return;
-    vec3 impact = ray.origin + ray.direction * t0;
-    hit.t = t0;
-    hit.material_id = sphere.material;
-    hit.origin = impact;
-    hit.normal = (impact - sphere.origin) / sphere.radius;
-}
-
-float hash(const in float n) {
-    return fract(sin(n) * 753.5453123);
-}
-
-float noise(const in vec3 x) {
-    vec3 p = floor(x);
-    vec3 f = fract(x);
-    f = f * f * (3.0 - 2.0 * f);
-    float n = p.x + p.y * 157.0 + 113.0 * p.z;
-    return mix(mix(mix(hash(n + 0.0), hash(n + 1.0), f.x), mix(hash(n + 157.0), hash(n + 158.0), f.x), f.y), mix(mix(hash(n + 113.0), hash(n + 114.0), f.x), mix(hash(n + 270.0), hash(n + 271.0), f.x), f.y), f.z);
-}
-
-float fbm(const in vec3 pos, const in float lacunarity) {
-    vec3 p = pos;
-    float t = 0.51749673 * noise(p);
-    p *= lacunarity;
-    t += 0.25584929 * noise(p);
-    p *= lacunarity;
-    t += 0.12527603 * noise(p);
-    p *= lacunarity;
-    t += 0.06255931 * noise(p);
-    return t;
-}
-
-float get_noise(const in vec3 x) {
-    return fbm(x, FBM_FREQ);
-}
-
-float density(const in vec3 pos, const in vec3 offset, const in float t) {
-    vec3 p = pos * .9212242 + offset;
-    float dens = get_noise(p);
-    float cov = 1.0 - COVERAGE;
-    dens *= smoothstep(cov, cov + 0.05, dens);
-    return clamp(dens, 0.0, 1.0);
-}
-
-vec4 renderClouds(Ray eye) {
-    Hit hit = no_hit;
-
-    intersect_sphere(eye, atm, hit);
-
-    const float thickness = THICKNESS;
-
-    const int steps = STEPS;
-
-    float march_step = thickness / float(steps);
-
-    vec3 dir_step = eye.direction / eye.direction.y * march_step;
-    vec3 pos = hit.origin;
-
-    float T = 1.0;
-    vec3 C = vec3(0.0);
-    float alpha = 0.0;
-
-    for(int i = 0; i < steps; i++) {
-        float h = float(i) / float(steps);
-        float dens = density(pos, WIND, h);
-
-        float T_i = exp(-ABSORPTION * dens * march_step);
-
-        T *= T_i;
-
-        if(T < .01)
-            break;
-
-        C += T * (exp(h) / 1.75) * dens * march_step;
-
-        alpha += (1. - T_i) * (1. - alpha);
-
-        pos += dir_step;
-
-        if(length(pos) > 1e3)
-            break;
-    }
-
-    return vec4(C, alpha);
-}
-
-Ray getPrimaryRay(const in vec3 cam_local_point, inout vec3 cam_origin, inout vec3 cam_look_at) {
-    vec3 fwd = normalize(cam_look_at - cam_origin);
-    vec3 up = vec3(0, 1, 0);
-    vec3 right = cross(up, fwd);
-    up = cross(fwd, right);
-
-    Ray r = Ray(cam_origin, normalize(fwd + up * cam_local_point.y + right * cam_local_point.x));
-    return r;
-}
+// 天空盒添加体积云
+// 参考 https://www.shadertoy.com/view/XtBXDw
 
 void main() {
     vec3 ray_direction = v_position;
@@ -270,28 +137,9 @@ void main() {
 
     vec3 color = atmosphere(normalize(ray_direction), u_sun_direction, u_sun_intensity);
 
-    // 天空盒添加体积云
-    // 参考 https://www.shadertoy.com/view/XtBXDw
-    // 按照示例重新组织空间结构
-    vec2 u_res = vec2(512.0, 512.0);
-    float fov = tan(radians(45.0));
-    float pointX = (2.0 * gl_FragCoord.x / u_res.x - 1.0) * u_res.x * 2.0 / u_res.y * fov;
-    float pointY = (2.0 * gl_FragCoord.y / u_res.y - 1.0) * 1.0 * fov;
-    float pointZ = -1.0;
-    vec3 point_cam = vec3(pointX, pointY, pointZ);
-    vec3 eyePosition = vec3(0.0, 0.0, 0.0);
-    vec3 lookAt = vec3(0.0, 0.0, -1.0);
-    Ray eyeRay = getPrimaryRay(point_cam, eyePosition, lookAt);
-
-    vec4 clouds = renderClouds(eyeRay);
-
     // Apply exposure [3]
     float white_scale = 1.0748724675633854; // 1.0 / uncharted2_tonemap(1000.0)
     color = uncharted2_tonemap((log2(2.0 / pow(u_luminance, 4.0))) * color) * white_scale;
-
-    color = mix(color, clouds.rgb / (0.000001 + clouds.a), clouds.a);
-
-    // color = clouds.rgb;
 
     gl_FragColor = vec4(color, 1.0);
 }
