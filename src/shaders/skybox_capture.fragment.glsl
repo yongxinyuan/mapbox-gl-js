@@ -232,7 +232,7 @@ vec4 renderClouds(CloudsRay eye) {
 
     for(int i = 0; i < steps; i++) {
         float h = float(i) / float(steps);
-        float dens = density(pos, CLOUDS_WIND, h);
+        float dens = density(pos, u_sun_direction, h);
         float T_i = exp(-CLOUDS_ABSORPTION * dens * march_step);
         T *= T_i;
         if(T < .01)

@@ -248,13 +248,13 @@ export function createEnvMapFromMapbox(gl, cubeEnv) {
     drawBlurImage(gl, planes, cubeEnv, envWidth, envHeight);
 
     // debug env map
-    const pixels = new Uint8Array(envWidth * envHeight * 4);
-    gl.readPixels(0, 0, envWidth, envHeight, gl.RGBA, gl.UNSIGNED_BYTE, pixels)
-    drawInCanvas(
-        pixels,
-        envWidth,
-        envHeight
-    );
+    // const pixels = new Uint8Array(envWidth * envHeight * 4);
+    // gl.readPixels(0, 0, envWidth, envHeight, gl.RGBA, gl.UNSIGNED_BYTE, pixels)
+    // drawInCanvas(
+    //     pixels,
+    //     envWidth,
+    //     envHeight
+    // );
 
     gl.disable(gl.SCISSOR_TEST);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);

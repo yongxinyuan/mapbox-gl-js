@@ -107,6 +107,12 @@
 
                     this.renderModel(gl, null, skyLayer);
                 }
+
+                date.setTime(date.getTime() + 60 * 1000);
+
+                this.map.setPaintProperty('sky', 'sky-atmosphere-sun', getSunPosition(date));
+
+                this.map.triggerRepaint();
             }
         }
 
@@ -142,6 +148,7 @@
             var sunPos = SunCalc.getPosition(date || Date.now(), center.lat, center.lng);
             var sunAzimuth = 180 + sunPos.azimuth * 180 / Math.PI;
             var sunAltitude = 90 - sunPos.altitude * 180 / Math.PI;
+            // console.log([sunAzimuth, sunAltitude]);
             return [sunAzimuth, sunAltitude];
         }
     </script>
