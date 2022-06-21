@@ -31,7 +31,12 @@
     <script src='../../dist/mapbox-gl-dev.js'></script>
     <script src='../../debug/access_token_generated.js'></script>
     <div id='map'></div>
+    <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.8.0/suncalc.min.js'></script>
     <script type="module">
+        let date = new Date(`2022-04-21 12:00:00`);
+
+        console.log(date);
+
         var map = window.map = new mapboxgl.Map({
             container: 'map',
             zoom: 12.1,
@@ -47,10 +52,44 @@
                 render();
             });
 
+            // date.setTime(date.getTime() + 60 * 1000);
+
+            map.setPaintProperty('sky', 'sky-atmosphere-sun', getSunPosition(date));
+
             map.triggerRepaint();
         }
 
-        render();
+
+        map.on('style.load', function () {
+            map.addLayer({
+                'id': 'sky',
+                'type': 'sky',
+                'paint': {
+                    'sky-opacity': ['interpolate', ['linear'],
+                        ['zoom'],
+                        0, 0,
+                        5, 0.3,
+                        8, 1],
+                    'sky-type': 'atmosphere',
+                    'sky-atmosphere-sun': getSunPosition(),
+                    'sky-atmosphere-sun-intensity': 5,
+                }
+            });
+
+            render();
+        });
+
+        function getSunPosition(date) {
+            const center = map.getCenter();
+            // eslint-disable-next-line no-undef
+            var sunPos = SunCalc.getPosition(date || Date.now(), center.lat, center.lng);
+            var sunAzimuth = 180 + sunPos.azimuth * 180 / Math.PI;
+            var sunAltitude = 90 - sunPos.altitude * 180 / Math.PI;
+            // console.log([sunAzimuth, sunAltitude]);
+            return [sunAzimuth, sunAltitude];
+        }
+
+
 
     </script>
 </body>

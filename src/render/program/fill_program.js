@@ -51,7 +51,8 @@ export type FillOutlinePatternUniformsType = {|
 const fillUniforms = (context: Context, locations: UniformLocations): FillUniformsType => ({
     'u_matrix': new UniformMatrix4f(context, locations.u_matrix),
     'u_time': new Uniform1f(context, locations.u_time),
-    'u_scale': new Uniform1f(context, locations.u_scale)
+    'u_scale': new Uniform1f(context, locations.u_scale),
+    'u_sky': new Uniform1i(context, location.u_sky)
 });
 
 const fillPatternUniforms = (context: Context, locations: UniformLocations): FillPatternUniformsType => ({
@@ -84,7 +85,8 @@ const fillOutlinePatternUniforms = (context: Context, locations: UniformLocation
 const fillUniformValues = (matrix: Float32Array, time, scale): UniformValues<FillUniformsType> => ({
     'u_matrix': matrix,
     "u_time": time,
-    'u_scale': scale
+    'u_scale': scale,
+    'u_sky': 3
 });
 
 const fillPatternUniformValues = (

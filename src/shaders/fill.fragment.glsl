@@ -3,6 +3,7 @@
 
 uniform float u_time;
 uniform float u_scale;
+uniform samplerCube u_sky;
 
 // 0.0, 8192.0
 varying vec2 vPos;
@@ -96,7 +97,7 @@ void main() {
 
     // x: [ 0.0,  30.0 ]
     // y: [ 30.0, 0.0  ]
-    ratio *= -max(min((22.0 - u_scale) * 30.0, 1500.0), 200.0);
+    ratio *= -max(min((22.0 - u_scale) * 100.0, 1500.0), 200.0);
 
     // [ 0.0, 1.0 ]
     // vec2 st = gl_FragCoord.xy / uResolution.xy;
@@ -108,10 +109,10 @@ void main() {
     // some noise in action
     // vec2 pos = vec2(st * 1.0);
 
-    vec3 dir = FBM_DXY(ratio, vec2(u_time / (u_scale * 3.0), u_time / (u_scale * 3.0)), 0.8, -0.5);
+    vec3 dir = FBM_DXY(ratio, vec2(u_time / (u_scale * 3.0), -u_time / (u_scale * 3.0)), 0.8, -0.5);
     vec3 normal = normalize(dir);
 
-    vec3 light = vec3(0.0, 10000.0, 10.0);
+    vec3 light = vec3(0.0, 1000.0, 300.0);
     vec3 surfaceToLightDirection = normalize(light - vec3(point.xy, 0.0));
 
     float lightColor = dot(normal, surfaceToLightDirection);
@@ -120,13 +121,13 @@ void main() {
 
     // lightColor += 0.9;
 
-    // gl_FragColor = texture2D(iChannel0, st / 2.0);
+    gl_FragColor = textureCube(u_sky, normal.xzy);
 
-    gl_FragColor = vec4(0.2, 0.37, 0.54, 1);
+    // gl_FragColor = vec4(0.2, 0.37, 0.54, 1);
 
     gl_FragColor.rgb *= lightColor;
 
-    gl_FragColor.rgb += 0.1;
+    // gl_FragColor.rgb += 0.1;
 
     gl_FragColor.rgb = Tonemap(gl_FragColor.rgb);
 

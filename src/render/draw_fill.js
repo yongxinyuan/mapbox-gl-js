@@ -109,6 +109,17 @@ function drawFillTiles(painter, sourceCache, layer, coords, depthMode, colorMode
             layer.paint.get('fill-translate'), layer.paint.get('fill-translate-anchor'));
 
         if (!isOutline) {
+            const skyLayerName = Object.keys(painter.style._layers).find((layerName) => {
+                return painter.style._layers[layerName].type === 'sky';
+            });
+            const skyLayer = skyLayerName && painter.style._layers[skyLayerName];
+
+            if (skyLayer) {
+                const texture = skyLayer.skyboxTexture;
+                gl.activeTexture(gl.TEXTURE3);
+                gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
+            }
+
             indexBuffer = bucket.indexBuffer;
             segments = bucket.segments;
             uniformValues = image ?
