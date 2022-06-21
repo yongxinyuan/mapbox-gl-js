@@ -5,11 +5,17 @@ uniform mat4 u_matrix;
 #pragma mapbox: define highp vec4 color
 #pragma mapbox: define lowp float opacity
 
+varying vec2 vPos;
+varying vec2 vPosW;
+
 void main() {
     #pragma mapbox: initialize highp vec4 color
     #pragma mapbox: initialize lowp float opacity
 
     gl_Position = u_matrix * vec4(a_pos, 0, 1);
+
+    vPos = a_pos;
+    vPosW = gl_Position.xy;
 
 #ifdef FOG
     v_fog_pos = fog_position(a_pos);
