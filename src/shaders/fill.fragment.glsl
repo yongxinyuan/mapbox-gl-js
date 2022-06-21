@@ -1,6 +1,8 @@
 #pragma mapbox: define highp vec4 color
 #pragma mapbox: define lowp float opacity
 
+uniform float u_time;
+
 // 0.0, 8192.0
 varying vec2 vPos;
 varying vec2 vPosW;
@@ -82,7 +84,7 @@ void main() {
     vec4 out_color = color;
 
     vec2 uResolution = vec2(8192.0);
-    float uTime = 0.1;
+    // float uTime = 0.1;
 
     // pixel coordinate
     vec2 point = vec2(vPos.x, vPos.y);
@@ -93,7 +95,7 @@ void main() {
 
     // x: [ 0.0,  30.0 ]
     // y: [ 30.0, 0.0  ]
-    ratio *= 100.0;
+    ratio *= 50.0;
 
     // [ 0.0, 1.0 ]
     vec2 st = gl_FragCoord.xy / uResolution.xy;
@@ -105,7 +107,7 @@ void main() {
     // some noise in action
     pos = vec2(pos * 1.0);
 
-    vec3 dir = FBM_DXY(ratio, vec2(-uTime / 10.0, -uTime / 10.0), 0.8, -0.5);
+    vec3 dir = FBM_DXY(ratio, vec2(u_time / 5.0, u_time / 5.0), 0.8, -0.5);
     vec3 normal = normalize(dir);
 
     vec3 light = vec3(0.0, 10000.0, 10.0);

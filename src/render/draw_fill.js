@@ -18,7 +18,13 @@ import type {OverscaledTileID} from '../source/tile_id.js';
 
 export default drawFill;
 
+let time = 0;
+
 function drawFill(painter: Painter, sourceCache: SourceCache, layer: FillStyleLayer, coords: Array<OverscaledTileID>) {
+    time += 0.1;
+
+    // console.log(time);
+
     const color = layer.paint.get('fill-color');
     const opacity = layer.paint.get('fill-opacity');
 
@@ -107,7 +113,7 @@ function drawFillTiles(painter, sourceCache, layer, coords, depthMode, colorMode
             segments = bucket.segments;
             uniformValues = image ?
                 fillPatternUniformValues(tileMatrix, painter, crossfade, tile) :
-                fillUniformValues(tileMatrix);
+                fillUniformValues(tileMatrix, time);
         } else {
             indexBuffer = bucket.indexBuffer2;
             segments = bucket.segments2;

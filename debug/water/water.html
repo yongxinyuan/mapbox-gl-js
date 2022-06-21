@@ -41,6 +41,17 @@
             style: 'mapbox://styles/mapbox/streets-v11',
             hash: true,
         });
+
+        function render() {
+            window.requestAnimationFrame(() => {
+                render();
+            });
+
+            map.triggerRepaint();
+        }
+
+        render();
+
     </script>
 </body>
 
