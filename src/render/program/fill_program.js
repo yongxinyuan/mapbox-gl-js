@@ -50,7 +50,8 @@ export type FillOutlinePatternUniformsType = {|
 
 const fillUniforms = (context: Context, locations: UniformLocations): FillUniformsType => ({
     'u_matrix': new UniformMatrix4f(context, locations.u_matrix),
-    'u_time': new Uniform1f(context, locations.u_time)
+    'u_time': new Uniform1f(context, locations.u_time),
+    'u_scale': new Uniform1f(context, locations.u_scale)
 });
 
 const fillPatternUniforms = (context: Context, locations: UniformLocations): FillPatternUniformsType => ({
@@ -66,7 +67,7 @@ const fillPatternUniforms = (context: Context, locations: UniformLocations): Fil
 
 const fillOutlineUniforms = (context: Context, locations: UniformLocations): FillOutlineUniformsType => ({
     'u_matrix': new UniformMatrix4f(context, locations.u_matrix),
-    'u_world': new Uniform2f(context, locations.u_world)
+    'u_world': new Uniform2f(context, locations.u_world),
 });
 
 const fillOutlinePatternUniforms = (context: Context, locations: UniformLocations): FillOutlinePatternUniformsType => ({
@@ -80,9 +81,10 @@ const fillOutlinePatternUniforms = (context: Context, locations: UniformLocation
     'u_fade': new Uniform1f(context, locations.u_fade)
 });
 
-const fillUniformValues = (matrix: Float32Array, time): UniformValues<FillUniformsType> => ({
+const fillUniformValues = (matrix: Float32Array, time, scale): UniformValues<FillUniformsType> => ({
     'u_matrix': matrix,
-    "u_time": time
+    "u_time": time,
+    'u_scale': scale
 });
 
 const fillPatternUniformValues = (
