@@ -111,7 +111,7 @@ void main() {
     // some noise in action
     // vec2 pos = vec2(st * 1.0);
 
-    vec3 dir = FBM_DXY(ratio, vec2(u_time / (u_scale * 5.0), -u_time / (u_scale * 5.0)), 0.8, -0.5);
+    vec3 dir = FBM_DXY(ratio, vec2(u_time / 7.0, -u_time / 7.0), 0.8, -0.5);
     vec3 normal = normalize(dir);
 
     vec3 light = vec3(0.0, 1000.0, 300.0);
