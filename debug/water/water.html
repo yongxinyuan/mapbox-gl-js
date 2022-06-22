@@ -43,7 +43,7 @@
             center: [-114.34411, 32.6141],
             pitch: 0,
             bearing: 0,
-            style: 'mapbox://styles/mapbox/streets-v11',
+            style: 'mapbox://styles/mapbox/satellite-v9',
             hash: true,
         });
 
@@ -52,7 +52,7 @@
                 render();
             });
 
-            // date.setTime(date.getTime() + 60 * 1000);
+            date.setTime(date.getTime() + 60 * 1000);
 
             map.setPaintProperty('sky', 'sky-atmosphere-sun', getSunPosition(date));
 
@@ -61,6 +61,30 @@
 
 
         map.on('style.load', function () {
+            map.addSource("vector-composite", {
+                type: "vector",
+                url: "mapbox://mapbox.mapbox-streets-v8,mapbox.mapbox-terrain-v2"
+            });
+
+            map.addLayer({
+                id: "vector-water",
+                type: "fill",
+                source: "vector-composite",
+                "source-layer": "water",
+                paint: {
+                    "fill-color": "hsl(196, 80%, 70%)"
+                }
+            });
+
+            map.addSource('mapbox-dem', {
+                "type": "raster-dem",
+                "url": "mapbox://mapbox.terrain-rgb",
+                "tileSize": 512,
+                "maxzoom": 14
+            });
+            map.setTerrain({ "source": "mapbox-dem", "exaggeration": 1.5 });
+
+
             map.addLayer({
                 'id': 'sky',
                 'type': 'sky',

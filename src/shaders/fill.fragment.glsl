@@ -97,7 +97,9 @@ void main() {
 
     // x: [ 0.0,  30.0 ]
     // y: [ 30.0, 0.0  ]
-    ratio *= -max(min((22.0 - u_scale) * 100.0, 1500.0), 200.0);
+    // ratio *= -max(min((22.0 - u_scale) * 1000.0, 1500.0), 200.0);
+
+    ratio *= 500000.0;
 
     // [ 0.0, 1.0 ]
     // vec2 st = gl_FragCoord.xy / uResolution.xy;
@@ -109,7 +111,7 @@ void main() {
     // some noise in action
     // vec2 pos = vec2(st * 1.0);
 
-    vec3 dir = FBM_DXY(ratio, vec2(u_time / (u_scale * 3.0), -u_time / (u_scale * 3.0)), 0.8, -0.5);
+    vec3 dir = FBM_DXY(ratio, vec2(u_time / (u_scale * 5.0), -u_time / (u_scale * 5.0)), 0.8, -0.5);
     vec3 normal = normalize(dir);
 
     vec3 light = vec3(0.0, 1000.0, 300.0);
@@ -130,5 +132,10 @@ void main() {
     // gl_FragColor.rgb += 0.1;
 
     gl_FragColor.rgb = Tonemap(gl_FragColor.rgb);
+
+    // gl_FragColor.r += 0.0;
+    // gl_FragColor.g += 0.08;
+    // gl_FragColor.b += 0.2;
+    gl_FragColor.a = 0.2;
 
 }
