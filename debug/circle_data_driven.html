@@ -43,10 +43,10 @@
                     sources: {},
                     layers: [],
                 },
-                hash: true,
+                hash: false,
             }));
-            map.showTileBoundaries = true;
-            map._showQueryGeometry = true;
+            // map.showTileBoundaries = true;
+            // map._showQueryGeometry = true;
 
             map.on("load", function () {
                 map.addSource("circles", {
@@ -59,7 +59,7 @@
                     type: "circle",
                     source: "circles",
                     paint: {
-                        "circle-radius": 20,
+                        "circle-radius": ["get", "scalerank"],
                         "circle-color": [
                             "rgb",
                             ["number", ["feature-state", "hover-r"], r],
