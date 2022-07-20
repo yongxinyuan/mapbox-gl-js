@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Mapbox GL JS debug page</title>
+        <meta charset="utf-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, user-scalable=no"
+        />
+        <link rel="stylesheet" href="../dist/mapbox-gl.css" />
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+            }
+            html,
+            body,
+            #map {
+                height: 100%;
+            }
+            #checkboxes {
+                position: absolute;
+                top: 0;
+                left: 0;
+                padding: 10px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="map"></div>
+
+        <script src="../dist/mapbox-gl-dev.js"></script>
+        <script src="../debug/access_token_generated.js"></script>
+        <script>
+            const r = 255 * 0.65;
+            var map = (window.map = new mapboxgl.Map({
+                container: "map",
+                zoom: 3,
+                center: [-77.01866, 38.888],
+                style: {
+                    version: 8,
+                    sources: {},
+                    layers: [],
+                },
+                hash: true,
+            }));
+            map.showTileBoundaries = true;
+            map._showQueryGeometry = true;
+
+            map.on("load", function () {
+                map.addSource("circles", {
+                    type: "geojson",
+                    data: "/test/integration/data/places.geojson",
+                });
+
+                map.addLayer({
+                    id: "circles",
+                    type: "circle",
+                    source: "circles",
+                    paint: {
+                        "circle-radius": 20,
+                        "circle-color": [
+                            "rgb",
+                            ["number", ["feature-state", "hover-r"], r],
+                            ["number", ["feature-state", "hover-g"], r],
+                            ["number", ["feature-state", "hover-b"], r],
+                        ],
+                        "circle-pitch-scale": "viewport",
+                        "circle-pitch-alignment": "viewport",
+                    },
+                });
+            });
+        </script>
+    </body>
+</html>
